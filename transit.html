@@ -1,0 +1,79 @@
+
+<!doctype html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+        <!--
+            Load Carto's code so we can pull in our Carto maps.
+        -->
+        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodbui/assets/4.6.25/stylesheets/deep_insights.css" />
+        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodbui/assets/4.6.25/stylesheets/public_editor3.css" />
+        <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+            #map {
+                height: 100%;
+                width: 100%;
+            }
+            .type-picker {
+                position: absolute;
+                top: 15px;
+                left: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <select class="type-picker">
+            <option value="Local,Neighborhood Shuttle,Regional Express,Express">All</option>
+            <option value="Local">Local</option>
+            <option value="Neighborhood Shuttle">Neighborhood Shuttle</option>
+            <option value="Regional Express">Regional Express</option>
+            <option value="Express">Express</option>
+        
+            
+            
+        </select>
+
+        
+        
+        
+        
+        <script>
+            var route_type;
+            $(document).ready(function () {
+                //
+                // Initialize map from CartoDB: create the map and store the data layer for later
+                //
+                cartodb.createVis('map', 'https://thenewschool.carto.com/u/pkardous/api/v2/viz/85bd6dcc-f97d-11e6-9eed-0e3a376473ab/viz.json')
+                    .done(function (vis, layers) {
+                        route_type = layers[1].getSubLayer(0);
+                    });
+
+                $('.type-picker').change(function () {
+                    var type = $('.type-picker').val();
+                    console.log(type);
+                    var sql;
+                    if (type === 'all') {
+                        // if type is 'all', reset SQL to the original
+                        sql = "SELECT * FROM cats_busroutes";
+                    }
+                    else {
+                        // else, select only features with the watsan field set to the chosen type
+                        sql = "SELECT * FROM cats_busroutes WHERE route_type = '" + type + "'";
+                    }
+                    console.log(sql);
+                    route_type.setSQL(sql);
+                });
+            });
+        </script>
+    </body>
+</html>
