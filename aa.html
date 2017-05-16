@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+        <!--
+            Load Carto's code so we can pull in our Carto maps.
+        -->
+        <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+        <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/3.15/cartodb.js"></script>
+
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+            }
+            #map {
+                height: 100%;
+                width: 100%;
+            }
+            .type-checkbox {
+                position: absolute;
+                top: 15px;
+                left: 200px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map">
+        <ul class="checkbox-container">
+<!--
+            
+<label type="checkbox" id="ALL">All</label> 
+ <input type="checkbox" id="ALL" class="ALL-checkbox" />
+-->
+           
+           
+<!--<label type="COUNTY">County Owned</label>-->
+<input type="checkbox" class="COUNTY-checkbox" />County Owned<br>
+ 
+
+<!--<label type="checkbox" id="CITY">City Owned</label>-->
+<input type="checkbox"  class="CITY-checkbox" />City Owned<br>
+        
+       
+<!--<label type="checkbox" id="RELIGIOUS">Religious Institution Owned</label>-->
+<input type="checkbox"  class="RELIGIOUS-checkbox" />Religious Institution Owned<br>
+
+
+<!--<label type="checkbox" id="STATE">State Owned</label>-->
+<input type="checkbox" class="STATE-checkbox" />State Owned<br>
+ 
+<input type="checkbox"  class="OTHER-checkbox" />Other Ownership <br>
+            
+ 
+  <BR>          
+           
+</div>
+        </select>
+
+        <script>
+          var maplayer;
+            $(document).ready(function () {
+                //
+                // Initialize map from CartoDB: create the map and store the data layer for later
+                //
+                cartodb.createVis('map', 'https://thenewschool.carto.com/u/pkardous/api/v2/viz/69f94d20-a1d7-11e6-9703-0ef24382571b/viz.json')
+                    .done(function (vis, layers) {
+                        maplayer = layers[1].getSubLayer(2);
+                    
+        });
+        $('.COUNTY-checkbox').change(function () {
+          updateSql();
+        });
+        $('.CITY-checkbox').change(function () {
+          updateSql();
+        });
+      });
+        $('.RELIGIOUS-checkbox').change(function () {
+          updateSql();
+
+        });
+        $('.STATE-checkbox').change(function () {
+          updateSql();
+        });
+         $('.OTHER-checkbox').change(function () {
+          updateSql();
+        });        
+            
+    function updateSql() {
+        var whereConditions = [];
+        // Since there are more checkboxes we use a technique that is a bit different from previous examples. We gather all the parts of the WHERE clause in an array (whereConditions) based on which checkboxes are checked.
+        // If you were using this technique you would do the following for each checkbox
+    
+        if ($('.COUNTY-checkbox').prop('checked')) {
+          whereConditions.push("tb_pubex_7 = 'COUNTY'");
+        }
+        if ($('.CITY-checkbox').prop('checked')) {
+          whereConditions.push("tb_pubex_7 = 'CITY'");
+        }
+        if ($('.RELIGIOUS-checkbox').prop('checked')) {
+          whereConditions.push("tb_pubex_7 = 'RELIGIOUS'");
+        }
+        if ($('.STATE-checkbox').prop('checked')) {
+          whereConditions.push("tb_pubex_7 = 'STATE'");
+     
+        }
+        if ($('.OTHER-checkbox').prop('checked')) {
+          whereConditions.push("tb_pubex_7 = 'OTHER'");
+            
+        }
+       
+            var sql = "SELECT * FROM parcels_1";
+    
+            
+        // If there are any whereConditions, we add WHERE to the SQL statement and the conditions
+        if (whereConditions.length > 0) {
+          // Then we combine them with ' OR ', so any of the conditions can be true.
+          sql += ' WHERE ' + whereConditions.join(' OR ');
+        }
+        // Leaving this console.log() here so we can make sure we get valid SQL.
+        console.log(sql);
+        maplayer.setSQL(sql);
+        }
+        
+            
+            
+        </script>
+    </body>
+</html>
